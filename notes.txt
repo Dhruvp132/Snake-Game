@@ -11,8 +11,8 @@ styles
     food cells
 
 handle Keypress changes direction
-handle movements after every sec 
-handle food consumption 
+handle movements after every sec
+handle food consumption
 handle death hit border eat ourself
 handle score counter
 handle game start and reset

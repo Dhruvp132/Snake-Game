@@ -24,7 +24,7 @@ class LinkedList {
   }
 }
 
-// let startGame = false;
+let startGame = false;
 const BOARD_SIZE = 15;
 const PROBABILITY_OF_DIRECTION_REVERSAL_FOOD = 0.3;
 
@@ -52,37 +52,49 @@ const getStartingSnakeLLValue = (board) => {
 export const Board = () => {
   const [score, setScore] = useState(0);
   const [board, setBoard] = useState(createBoard(BOARD_SIZE));
-  const [snake, setSnake] = useState(
-    new LinkedList(getStartingSnakeLLValue(board))
-  );
-  const [snakeCells, setSnakeCells] = useState(
-    new Set([snake.head.value.cell])
-  );
+  const [snake, setSnake] = useState(new LinkedList(getStartingSnakeLLValue(board)));
+  const [snakeCells, setSnakeCells] = useState(new Set([snake.head.value.cell]));
   //Naively set the satrting food as initally set to + 5 pos to the snake cell
   const [foodCell, setFoodCell] = useState(snake.head.value.cell + 5);
   const [direction, setDirection] = useState(Direction.RIGHT);
-  const [foodShouldReverseDirection, setFoodShouldReverseDirection] =
-    useState(false);
+  const [foodShouldReverseDirection, setFoodShouldReverseDirection] = useState(false);
 
   useEffect(() => {
-    window.addEventListener("keydown", (e) => {
-      handleKeydown(e);
-    });
-  }, []);
+    const handleKeyDown = (e) => {
+      const newDirection = getDirectionFromKey(e.key);
+      const isValidDirection = newDirection !== "";
+      if (!isValidDirection) return;
+
+      const snakeWillRunIntoItself = getOppositeDirection(newDirection) === direction && snakeCells.size > 1;
+
+      if (snakeWillRunIntoItself) return;
+      setDirection(newDirection);
+    };
+
+    window.addEventListener("keydown", handleKeyDown);
+
+    // Cleanup: remove the event listener when the component unmounts
+    return () => {
+      window.removeEventListener("keydown", handleKeyDown);
+    };
+  }, [direction, snakeCells]);
 
   // `useInterval` is needed; you can't naively do `setInterval` in the
   // `useEffect` above. See the article linked above the `useInterval`
   // definition for details.
 
   useInterval(() => {
-    moveSnake();
+    if(startGame) moveSnake();
   }, 150);
 
   const handleKeydown = (e) => {
     const newDirection = getDirectionFromKey(e.key);
+    console.log(newDirection);
     const isValidDirection = newDirection !== "";
     if (!isValidDirection) return;
     //bug : value of direction is not updating below 
+    // console.log(getOppositeDirection(newDirection) === direction + "cond 1 " );
+    // console.log(snakeCells.size > 1);'
     
     const snakeWillRunIntoItself = getOppositeDirection(newDirection) === direction && snakeCells.size > 1;
     // Note: this functionality is currently broken, for the same reason that
@@ -90,11 +102,9 @@ export const Board = () => {
     // will currently never reflect their "latest version" when `handleKeydown`
     // is called. 
     //console.log(direction);
-    //console.log(snakeCells.size);
-    //console.log(getOppositeDirection(newDirection) === direction );
-    //console.log(snakeWillRunIntoItself)
+    // console.log(snakeWillRunIntoItself)
     if (snakeWillRunIntoItself) return;
-    setDirection(newDirection);
+    setDirection(newDirection); //updated the state
   };
 
   const moveSnake = () => {
@@ -220,12 +230,13 @@ export const Board = () => {
     setFoodCell(snakeLLStartingValue.cell + 5);
     setSnakeCells(new Set([snakeLLStartingValue.cell]));
     setDirection(Direction.RIGHT);
+    startGame = false;
   };
 
   return (
     <>
       <h1>Score : {score}</h1>
-      {/* <button onClick={()=> {startGame = true}}>Start</button>   AADEDD after */}
+      <button type='button' style={{ margin : '15px', width : "100px" }} className='btn btn-outline-light btn-lg' onClick={()=> {startGame = true}}> Start</button>  
       {/* <button onClick={() => growSnake()}> grow Manually</button> //JUST FOR CHECKING 
       <button onClick={() => moveSnake()}> Move manually</button> */}
       {/* iterate through board every row and make it and ele & then for every row map every cell to an ele */}
