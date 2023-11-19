@@ -1,0 +1,18 @@
+Create board 
+    Matrix representattion
+
+create snake
+    singly Linked List representattion
+    Handle Snake growth 
+    Handle Snake direction reversal 
+
+styles
+    snake cells
+    food cells
+
+handle Keypress changes direction
+handle movements after every sec 
+handle food consumption 
+handle death hit border eat ourself
+handle score counter
+handle game start and reset
