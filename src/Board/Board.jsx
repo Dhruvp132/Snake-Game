@@ -7,7 +7,7 @@ import {
 
 import "./Board.css";
 
-// node class val and .next pointer
+// node class .value and .next pointer
 class LinkedListNode {
   constructor(value) {
     this.value = value;
@@ -26,7 +26,7 @@ class LinkedList {
 
 let startGame = false;
 const BOARD_SIZE = 15;
-const PROBABILITY_OF_DIRECTION_REVERSAL_FOOD = 0.3;
+const PROBABILITY_OF_DIRECTION_REVERSAL_FOOD = 1; // -mod
 
 //hash table looks like typescript enum
 const Direction = {
@@ -43,9 +43,9 @@ const getStartingSnakeLLValue = (board) => {
   const startingCol = Math.round(colSize / 3);
   const startingCell = board[startingRow][startingCol];
   return {
-    row: startingRow,
-    col: startingCol,
-    cell: startingCell,
+    row: 0,
+    col: 0,
+    cell: 1,
   };
 };
 
@@ -55,7 +55,7 @@ export const Board = () => {
   const [snake, setSnake] = useState(new LinkedList(getStartingSnakeLLValue(board)));
   const [snakeCells, setSnakeCells] = useState(new Set([snake.head.value.cell]));
   //Naively set the satrting food as initally set to + 5 pos to the snake cell
-  const [foodCell, setFoodCell] = useState(snake.head.value.cell + 5);
+  const [foodCell, setFoodCell] = useState(snake.head.value.cell + 6);
   const [direction, setDirection] = useState(Direction.RIGHT);
   const [foodShouldReverseDirection, setFoodShouldReverseDirection] = useState(false);
 
@@ -124,6 +124,7 @@ export const Board = () => {
       return;
     }
 
+    // Here's a new LinkedListNode class OBJECT has been created it has 2 properties - .values, .next and values are assigned 
     const newHead = new LinkedListNode({
       row: nextHeadCoords.row,
       col: nextHeadCoords.col,
@@ -155,6 +156,7 @@ export const Board = () => {
   const growSnake = (newSnakeCells) => {
     const growthNodeCoords = getGrowthNodeCoords(snake.tail, direction);
     if (isOutOfBounds(growthNodeCoords, board)) {
+      //fix the row bug :P
       // Snake is positioned such that it can't grow; don't do anything.
       return;
     }
@@ -178,7 +180,18 @@ export const Board = () => {
     setDirection(newDirection);
     // The tail of the snake is really the head of the linked list, which
     // is why we have to pass the snake's tail to `reverseLinkedList`.
-    //handle if tail is agains the wall
+    //handle if tail is agains the wall\
+
+
+    // ===== Explain why we pass snake.tail ============
+    /* 1. how snake LL look like : 
+
+     <-[tail]--->[]--->[]--->[]--->[]--->[]--->[snakehead]>
+
+     if we do head.next it will return nothin coz we use tail.next 
+     to travserse accross the LinkedList 
+     
+     Here We TRAVERSE using tail.next not head.next */
     reverseLinkedList(snake.tail);
     const snakeHead = snake.head;
     snake.head = snake.tail;
@@ -235,7 +248,11 @@ export const Board = () => {
 
   return (
     <>
+      <div>to play enable the if condition in useEffect </div>
       <h1>Score : {score}</h1>
+
+      <button type='button' style={{ margin : '15px', width : "100px" }} className='btn btn-outline-light btn-lg' onClick={()=> {moveSnake()}}> Move Manulay </button>  
+      <button type='button' style={{ margin : '15px', width : "100px" }} className='btn btn-outline-light btn-lg' onClick={()=> {growSnake(snakeCells)}}> Grow </button>  
       <button type='button' style={{ margin : '15px', width : "100px" }} className='btn btn-outline-light btn-lg' onClick={()=> {startGame = true}}> Start</button>  
       {/* <button onClick={() => growSnake()}> grow Manually</button> //JUST FOR CHECKING 
       <button onClick={() => moveSnake()}> Move manually</button> */}
