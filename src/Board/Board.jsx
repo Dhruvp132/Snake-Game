@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState } from "react";
+import React, { useEffect, useState } from "react";
 import {
   randomIntFromInterval,
   useInterval,
@@ -26,7 +26,7 @@ class LinkedList {
 
 let startGame = false;
 const BOARD_SIZE = 15;
-const PROBABILITY_OF_DIRECTION_REVERSAL_FOOD = 1; // -mod
+const PROBABILITY_OF_DIRECTION_REVERSAL_FOOD = 0.3; 
 
 //hash table looks like typescript enum
 const Direction = {
@@ -43,9 +43,9 @@ const getStartingSnakeLLValue = (board) => {
   const startingCol = Math.round(colSize / 3);
   const startingCell = board[startingRow][startingCol];
   return {
-    row: 0,
-    col: 0,
-    cell: 1,
+    row: startingRow,
+    col: startingCol,
+    cell: startingCell,
   };
 };
 
@@ -55,7 +55,7 @@ export const Board = () => {
   const [snake, setSnake] = useState(new LinkedList(getStartingSnakeLLValue(board)));
   const [snakeCells, setSnakeCells] = useState(new Set([snake.head.value.cell]));
   //Naively set the satrting food as initally set to + 5 pos to the snake cell
-  const [foodCell, setFoodCell] = useState(snake.head.value.cell + 6);
+  const [foodCell, setFoodCell] = useState(snake.head.value.cell + 5);
   const [direction, setDirection] = useState(Direction.RIGHT);
   const [foodShouldReverseDirection, setFoodShouldReverseDirection] = useState(false);
 
@@ -87,7 +87,7 @@ export const Board = () => {
     if(startGame) moveSnake();
   }, 150);
 
-  const handleKeydown = (e) => {
+  const handleKeyDown = (e) => {
     const newDirection = getDirectionFromKey(e.key);
     console.log(newDirection);
     const isValidDirection = newDirection !== "";
@@ -97,10 +97,6 @@ export const Board = () => {
     // console.log(snakeCells.size > 1);'
     
     const snakeWillRunIntoItself = getOppositeDirection(newDirection) === direction && snakeCells.size > 1;
-    // Note: this functionality is currently broken, for the same reason that
-    // `useInterval` is needed. Specifically, the `direction` and `snakeCells`
-    // will currently never reflect their "latest version" when `handleKeydown`
-    // is called. 
     //console.log(direction);
     // console.log(snakeWillRunIntoItself)
     if (snakeWillRunIntoItself) return;
@@ -248,11 +244,10 @@ export const Board = () => {
 
   return (
     <>
-      <div>to play enable the if condition in useEffect </div>
       <h1>Score : {score}</h1>
 
-      <button type='button' style={{ margin : '15px', width : "100px" }} className='btn btn-outline-light btn-lg' onClick={()=> {moveSnake()}}> Move Manulay </button>  
-      <button type='button' style={{ margin : '15px', width : "100px" }} className='btn btn-outline-light btn-lg' onClick={()=> {growSnake(snakeCells)}}> Grow </button>  
+      {/* <button type='button' style={{ margin : '15px', width : "100px" }} className='btn btn-outline-light btn-lg' onClick={()=> {moveSnake()}}> Move Manulay </button>   */}
+      {/* <button type='button' style={{ margin : '15px', width : "100px" }} className='btn btn-outline-light btn-lg' onClick={()=> {growSnake(snakeCells)}}> Grow </button>   */}
       <button type='button' style={{ margin : '15px', width : "100px" }} className='btn btn-outline-light btn-lg' onClick={()=> {startGame = true}}> Start</button>  
       {/* <button onClick={() => growSnake()}> grow Manually</button> //JUST FOR CHECKING 
       <button onClick={() => moveSnake()}> Move manually</button> */}
@@ -268,9 +263,9 @@ export const Board = () => {
                 snakeCells
               );
               return <div key={cellIdx} className={className}></div>;
-              {
-                /* {cellValue }to check and above codn is that snakeCell Set has that cellvalue row*/
-              }
+              // {
+              //   /* {cellValue }to check and above codn is that snakeCell Set has that cellvalue row*/
+              // }
             })}
           </div>
         ))}
