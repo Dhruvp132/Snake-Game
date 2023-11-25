@@ -1,5 +1,12 @@
 # Getting Started with Create React App
 
+This is a Snake Game with food consumption and reversing snake direction.
+Implemented using Linked List nodes for manipulating snake cells movements and cell growth
+
+To Play : https://dhruvp132.github.io/Snake-Game/
+
+# Getting Started with Create React App
+
 This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
 
 ## Available Scripts
